@@ -5,14 +5,21 @@ const { PORT } = require('./util/config')
 const { connectToDatabase } = require('./util/db')
 
 const blogsRouter = require('./controllers/blogs')
+const usersRouter = require('./controllers/users')
+const loginRouter = require('./controllers/login')
 
 app.use(express.json())
 app.use('/api/blogs', blogsRouter)
+app.use('/api/users', usersRouter)
+app.use('/api/login', loginRouter)
 
 const errorHandler = (error, request, response, next) => {
   console.error(error.message)
-  return response.status(400).send({ error })
-  // next(error)
+  // console.log('er - ', error);
+  if (error.name === 'SequelizeValidationError') {
+    return response.status(400).send({ error: [error.errors[0].message] })
+  } 
+  next(error)
 }
 app.use(errorHandler)
 
