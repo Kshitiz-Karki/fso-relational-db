@@ -1,25 +1,8 @@
 const router = require('express').Router()
 const { Blog, User } = require('../models')
-const { SECRET } = require('../util/config')
-const jwt = require('jsonwebtoken')
+const { tokenExtractor } = require('../util/middleware')
 const { Op } = require('sequelize')
 require('express-async-errors')
-
-const tokenExtractor = (req, res, next) => {
-  const authorization = req.get('authorization')
-  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-    // console.log(authorization.substring(7));
-    // console.log(SECRET);
-    try {
-      req.decodedToken = jwt.verify(authorization.substring(7), SECRET)
-    } catch{
-      return res.status(401).json({ error: 'token invalid' })
-    }
-  }  else {
-    return res.status(401).json({ error: 'token missing' })
-  }
-  next()
-}
 
 router.get('/', async (req, res) => {
   let where = {}
@@ -61,6 +44,16 @@ router.get('/', async (req, res) => {
 
 router.post('/', tokenExtractor, async (req, res) => {
   // try {
+    const date = new Date();
+    const currentYear = date.getFullYear()
+    // console.log('yr -', yr);
+    // console.log('type of yr - ', typeof yr)
+    // console.log('typeof 2023 - ', typeof 2023);
+    // console.log('req.body.year - ', req.body.year);
+
+    if(!req.body.year || req.body.year < 1991 || req.body.year > currentYear) {
+      return res.status(400).json({ error: 'invalid year' })
+    }
     const user = await User.findByPk(req.decodedToken.id)
     const blog = await Blog.create({...req.body, userId: user.id, date: new Date()})
     res.json(blog)

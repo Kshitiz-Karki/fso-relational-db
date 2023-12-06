@@ -27,11 +27,21 @@ Blog.init({
   },
   date: {
     type: DataTypes.DATE
-  }
+  },
+  year: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
+  // createdAt: {
+  //   type: DataTypes.DATE
+  // },
+  // updatedAt: {
+  //   type: DataTypes.DATE
+  // }
 }, {
   sequelize,
   underscored: true,
-  timestamps: false,
+  timestamps: true,
   modelName: 'blog'
 })
 
