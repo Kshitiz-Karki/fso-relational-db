@@ -21,12 +21,10 @@ User.init({
     type: DataTypes.TEXT,
     allowNull: false
   },
-  // createdAt: {
-  //   type: DataTypes.DATE
-  // },
-  // updatedAt: {
-  //   type: DataTypes.DATE
-  // }
+  disabled: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
 }, {
   sequelize,
   underscored: true,

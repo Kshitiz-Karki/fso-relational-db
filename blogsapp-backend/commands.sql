@@ -17,3 +17,4 @@ insert into user_blogs (user_id, blog_id) values (1, 2);
 insert into user_blogs (user_id, blog_id) values (1, 3);
 insert into user_blogs (user_id, blog_id) values (2, 2);
 insert into user_blogs (user_id, blog_id) values (2, 4);
+

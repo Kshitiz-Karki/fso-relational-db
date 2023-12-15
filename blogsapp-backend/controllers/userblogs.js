@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const { tokenExtractor } = require('../util/middleware')
+const { tokenExtractor, loggedInUserFinder } = require('../util/middleware')
 const { UserBlogs } = require('../models')
 require('express-async-errors')
 
@@ -13,7 +13,10 @@ router.post('/', async (req, res) => {
   // }
 })
 
-router.put('/:id', tokenExtractor, async(req, res) => {
+router.put('/:id', tokenExtractor, loggedInUserFinder, async(req, res) => {
+  if(!req.validUser){
+      return res.status(401).json({ error: 'user disabled' })
+  }
   console.log('req.params.id: ', req.params.id);
   console.log('req.decodedToken.id: ', req.decodedToken.id);
   const userBlog = await UserBlogs.findOne({

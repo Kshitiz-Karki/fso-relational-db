@@ -9,6 +9,7 @@ const usersRouter = require('./controllers/users')
 const loginRouter = require('./controllers/login')
 const authorRouter = require('./controllers/authors')
 const readinglistsRouter = require('./controllers/userblogs')
+const logoutRouter = require('./controllers/logout')
 
 app.use(express.json())
 app.use('/api/blogs', blogsRouter)
@@ -16,11 +17,12 @@ app.use('/api/users', usersRouter)
 app.use('/api/login', loginRouter)
 app.use('/api/authors', authorRouter)
 app.use('/api/readinglists', readinglistsRouter)
+app.use('/api/logout', logoutRouter)
 
 const errorHandler = (error, request, response, next) => {
   console.error(error.message)
-  // console.log('er - ', error);
-  if (error.name === 'SequelizeValidationError') {
+  console.log('error.name - ', error.name);
+  if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
     return response.status(400).send({ error: [error.errors[0].message] })
   } 
   next(error)

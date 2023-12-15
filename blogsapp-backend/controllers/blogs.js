@@ -1,6 +1,7 @@
 const router = require('express').Router()
 const { Blog, User } = require('../models')
-const { tokenExtractor } = require('../util/middleware')
+// const Token = require('../models/token')
+const { tokenExtractor, loggedInUserFinder } = require('../util/middleware')
 const { Op } = require('sequelize')
 require('express-async-errors')
 
@@ -42,8 +43,16 @@ router.get('/', async (req, res) => {
   res.json(blogs)
 })
 
-router.post('/', tokenExtractor, async (req, res) => {
+
+
+router.post('/', tokenExtractor, loggedInUserFinder, async (req, res) => {
   // try {
+    // console.log('req.decodedToken - ', req.decodedToken);
+    if(!req.validUser){
+      return res.status(401).json({ error: 'user disabled' })
+    }
+
+
     const date = new Date();
     const currentYear = date.getFullYear()
     // console.log('yr -', yr);
@@ -67,7 +76,10 @@ const blogFinder = async (req, res, next) => {
   next()
 }
 
-router.delete('/:id', blogFinder, tokenExtractor, async (req, res) => {
+router.delete('/:id', blogFinder, tokenExtractor, loggedInUserFinder, async (req, res) => {
+  if(!req.validUser){
+      return res.status(401).json({ error: 'user disabled' })
+  }
   // console.log('req.decodedToken.id - ', req.decodedToken.id);
   // console.log('req.blog.userId - ', req.blog.userId);
   if (req.blog && req.decodedToken.id === req.blog.userId) {
